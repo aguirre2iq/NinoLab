@@ -1,0 +1,37 @@
+/* ==========================================================
+   NiñoLab · inicio.css
+   Portada: título, planeta interactivo y las 5 preguntas.
+   ========================================================== */
+.hero{position:relative;padding-block:calc(var(--navh) + 48px) 40px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;align-items:center}
+@media (max-width:920px){.hero-grid{grid-template-columns:1fr}}
+.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.badge{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;font-weight:600}
+.badge.red{background:var(--red);color:#fff;border-color:var(--red)}
+.hero h1{font-size:clamp(2.5rem,6vw,4.7rem);font-weight:800;letter-spacing:-.025em}
+.hero h1 .r{color:var(--red)}
+.hero h1 .line{display:block;animation:subir .9s cubic-bezier(.2,.7,.2,1) both}
+.hero h1 .line:nth-child(2){animation-delay:.12s}
+@keyframes subir{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
+.hero .lede{margin-top:24px;font-size:1.2rem}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+
+/* Planeta */
+.planeta{position:relative;display:grid;place-items:center;min-width:0}
+.planeta canvas{width:min(100%,520px);aspect-ratio:1;height:auto;cursor:grab;touch-action:none}
+.planeta canvas:active{cursor:grabbing}
+.planeta-nota{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:.76rem;color:var(--muted);background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:999px;padding:5px 12px;white-space:nowrap}
+.planeta-chip{position:absolute;top:8%;right:2%;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 14px;box-shadow:var(--shadow);font-size:.86rem;line-height:1.3;animation:flotar 5s ease-in-out infinite}
+.planeta-chip b{display:block;font-family:var(--f-display);font-size:1.25rem;color:var(--red)}
+
+/* Las cinco preguntas */
+.preguntas{list-style:none;margin:44px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;counter-reset:q}
+@media (max-width:980px){.preguntas{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.preguntas{grid-template-columns:1fr}}
+.preguntas li{counter-increment:q;border:1.5px solid var(--line);border-radius:18px;padding:16px;background:#fff;display:grid;gap:6px;align-content:start;transition:border-color .3s,background .3s,transform .3s}
+.preguntas li::before{content:counter(q);width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:.9rem;background:var(--chip);transition:background .3s,color .3s}
+.preguntas li.lit{border-color:var(--red);background:var(--red-soft);transform:translateY(-4px)}
+.preguntas li.lit::before{background:var(--red);color:#fff}
+.preguntas b{font-size:1.02rem;line-height:1.25}
+.preguntas span{color:var(--muted);font-size:.92rem;line-height:1.35}
+.preguntas li.own b::after{content:"Aporte NiñoLab";display:block;margin-top:4px;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red);font-weight:600}

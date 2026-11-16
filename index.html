@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NiñoLab</title>
+<meta name="description" content="NiñoLab: detective científico de cambios ambientales en el Perú con datos abiertos de la NASA. NASA Space Apps Challenge 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<!-- Estilos: uno por cada parte de la página -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/leaflet.css">
+<link rel="stylesheet" href="css/inicio.css">
+<link rel="stylesheet" href="css/perfil.css">
+<link rel="stylesheet" href="css/investigar.css">
+<link rel="stylesheet" href="css/territorio.css">
+<link rel="stylesheet" href="css/oceano.css">
+<link rel="stylesheet" href="css/cronologia.css">
+<link rel="stylesheet" href="css/hallazgos-metodo.css">
+<link rel="stylesheet" href="css/duke.css">
+</head>
+<body>
+
+<!-- Duke (dibujo reutilizable) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="duke" viewBox="0 0 100 124">
+      <path d="M14 86 C4 80 2 68 9 62" fill="none" stroke="#141112" stroke-width="5" stroke-linecap="round"/>
+      <path d="M86 84 C98 74 100 60 92 52" fill="none" stroke="#141112" stroke-width="5" stroke-linecap="round"/>
+      <path d="M50 6 C62 30 86 70 88 96 C89 108 78 112 50 112 C22 112 11 108 12 96 C14 70 38 30 50 6Z" fill="#FFFFFF" stroke="#141112" stroke-width="4"/>
+      <path d="M50 6 C58 22 69 42 75 57 C64 62 36 62 25 57 C31 42 42 22 50 6Z" fill="#141112"/>
+      <circle cx="50" cy="62" r="13" fill="#D3202B" stroke="#141112" stroke-width="3"/>
+      <circle cx="46" cy="58" r="3.5" fill="#FFFFFF" opacity=".7"/>
+      <ellipse cx="34" cy="116" rx="12" ry="5" fill="#141112"/>
+      <ellipse cx="66" cy="116" rx="12" ry="5" fill="#141112"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============ BARRA DE NAVEGACIÓN ============ -->
+<nav class="nav" aria-label="Secciones">
+  <div class="wrap">
+    <a class="logo" href="#inicio"><span class="logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/><path d="M6.5 11.5c1.3-1.6 2.7-1.6 4 0s2.7 1.6 4 0"/></svg></span>Niño<b>Lab</b></a>
+    <div class="links" id="links">
+      <a href="#perfil">Mi perfil</a>
+      <a href="#investigar">Investigar</a>
+      <a href="#territorio">Territorio</a>
+      <a href="#oceano">Océano</a>
+      <a href="#cronologia">El Niño en Perú</a>
+      <a href="#hallazgos">Mis hallazgos</a>
+      <a href="#metodo">Expediente</a>
+    </div>
+    <button class="profile-pill" id="profilePill" type="button"><i></i><span id="profilePillTxt"></span></button>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Abrir menú" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <a href="#perfil">Mi perfil</a><a href="#investigar">Investigar</a><a href="#territorio">Territorio</a><a href="#oceano">Océano</a><a href="#cronologia">El Niño en Perú</a><a href="#hallazgos">Mis hallazgos</a><a href="#metodo">Expediente</a>
+</div>
+
+<main>
+<!-- ============ INICIO ============ -->
+<header class="hero" id="inicio">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="badge-row"><span class="badge red">NASA Space Apps 2026</span><span class="badge">Challenge 2 · Earth System Trend Detective</span></div>
+      <h1><span class="line">Descubre los cambios.</span><span class="line"><span class="r">Comprende</span> la evidencia.</span></h1>
+      <p class="lede">NiñoLab es un detective científico digital. Tú haces una pregunta sobre tu entorno; NiñoLab pide los datos abiertos de la NASA, analiza el período completo, comprueba si el cambio es real y te lo explica en palabras simples.</p>
+      <div class="cta-row">
+        <a class="btn red" href="#perfil">Empezar en 3 preguntas <span aria-hidden="true">→</span></a>
+        <a class="btn ghost" href="#investigar">Ver una investigación</a>
+      </div>
+    </div>
+    <div class="planeta">
+      <canvas id="planeta" aria-label="Planeta Tierra que gira; se puede arrastrar"></canvas>
+      <a class="planeta-chip" href="#oceano" style="text-decoration:none;color:inherit">Mar frente al Perú<b id="heroIndice">—</b><span id="heroIndiceTxt"></span></a>
+      <span class="planeta-nota">Arrastra para girar</span>
+    </div>
+  </div>
+  <div class="wrap">
+    <ol class="preguntas" id="preguntas" aria-label="Las preguntas que responde toda investigación">
+      <li class="lit"><b>¿Qué está cambiando?</b><span>La variable ambiental que se modifica.</span></li>
+      <li><b>¿Dónde está cambiando?</b><span>El territorio o la zona del mar.</span></li>
+      <li><b>¿Cuánto está cambiando?</b><span>Magnitud, duración y evolución.</span></li>
+      <li><b>¿Es significativo?</b><span>Si la evidencia alcanza para afirmarlo.</span></li>
+      <li class="own"><b>¿Qué significa para mí?</b><span>Lo que implica para tu actividad.</span></li>
+    </ol>
+  </div>
+</header>
+<div class="ola-div" aria-hidden="true"><svg viewBox="0 0 2400 46" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 23q75-30 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/><path class="roja" d="M0 30q75 24 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/></svg></div>
+
+<!-- ============ MI PERFIL ============ -->
+<section id="perfil">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <svg class="deco" viewBox="0 0 170 170" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="fs" cx="85" cy="85" r="70"/><circle class="r" cx="112" cy="52" r="17"/><path class="r" d="M112 24v-9M112 89v-9M84 52h-9M149 52h-9M92 32l-6-6M138 78l-6-6M92 72l-6 6M138 26l-6 6"/><path d="M58 60s22 26 22 44a22 22 0 0 1-44 0c0-18 22-44 22-44Z"/><path class="s" d="M20 140c12-10 24-10 36 0s24 10 36 0 24-10 36 0 14 6 22 2"/></svg>
+      <div class="eyebrow"><svg viewBox="0 0 44 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M1 7c5-6 9-6 14 0s9 6 14 0 9-6 14 0"/></svg>Mi perfil</div>
+      <h2>Tres preguntas y la plataforma habla tu idioma</h2>
+      <p class="lede">Sin cuentas ni contraseñas. Tu perfil cambia las explicaciones y las sugerencias. Los resultados científicos son los mismos para todos.</p>
+    </div>
+    <div class="profile">
+      <div class="stepper reveal">
+        <div class="steps-bar"><i class="on"></i><i></i><i></i></div>
+        <div class="step on">
+          <h3>¿A qué te dedicas?</h3>
+          <p>Así sabremos qué variables te importan primero.</p>
+          <div class="opts" id="optSector"></div>
+        </div>
+        <div class="step">
+          <h3>¿Dónde está tu zona?</h3>
+          <p>Elige el departamento que quieres seguir.</p>
+          <div class="field"><label for="selRegion">Departamento</label><select id="selRegion"></select></div>
+        </div>
+        <div class="step">
+          <h3>¿Qué te preocupa más?</h3>
+          <p>Lo usaremos para proponerte la primera pregunta.</p>
+          <div class="opts" id="optConcern"></div>
+        </div>
+        <div class="step-nav">
+          <button class="btn ghost sm" id="prevStep" type="button" hidden>← Atrás</button>
+          <span></span>
+          <button class="btn sm" id="nextStep" type="button">Siguiente →</button>
+        </div>
+      </div>
+      <div class="adapt reveal" id="adaptBox"></div>
+    </div>
+  </div>
+</section>
+<div class="ola-div" aria-hidden="true"><svg viewBox="0 0 2400 46" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 23q75-30 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/><path class="roja" d="M0 30q75 24 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/></svg></div>
+
+<!-- ============ INVESTIGAR ============ -->
+<section id="investigar">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <svg class="deco" viewBox="0 0 170 170" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="fs" cx="78" cy="76" r="50"/><circle cx="78" cy="76" r="50"/><path d="M114 112l40 40" stroke-width="7"/><path class="s" d="M42 70c9-8 18-8 27 0s18 8 27 0 12-6 18-3"/><path class="r" d="M42 90c9-8 18-8 27 0s18 8 27 0 12-6 18-3"/></svg>
+      <div class="eyebrow"><svg viewBox="0 0 44 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M1 7c5-6 9-6 14 0s9 6 14 0 9-6 14 0"/></svg>Investigar</div>
+      <h2>Haz una pregunta. NiñoLab investiga.</h2>
+      <p class="lede">El motor pide la serie a NASA POWER, revisa su cobertura, analiza el período completo, aplica pruebas de tendencia y solo afirma lo que la evidencia respalda.</p>
+    </div>
+    <div class="lab">
+      <form class="panel form" id="invForm">
+        <div class="field"><label for="qText">Tu pregunta</label><textarea id="qText" class="qinput" rows="3"></textarea></div>
+        <div class="suggest" id="suggest"></div>
+        <div class="field"><label for="selPlace">Lugar</label><select id="selPlace"></select></div>
+        <div class="field"><label for="selVar">Variable</label><select id="selVar"></select></div>
+        <div class="row2">
+          <div class="field"><label for="selFrom">Desde</label><select id="selFrom"></select></div>
+          <div class="field"><label for="selTo">Hasta</label><select id="selTo"></select></div>
+        </div>
+        <button class="btn red" type="submit" id="runBtn" style="justify-content:center">Investigar</button>
+        <div class="progress" id="progress"></div>
+      </form>
+      <article class="panel" id="result" aria-live="polite"><p class="lede">Pidiendo los datos a NASA POWER…</p></article>
+    </div>
+  </div>
+</section>
+<div class="ola-div" aria-hidden="true"><svg viewBox="0 0 2400 46" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 23q75-30 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/><path class="roja" d="M0 30q75 24 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/></svg></div>
+
+<!-- ============ TERRITORIO ============ -->
+<section id="territorio">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <svg class="deco" viewBox="0 0 170 170" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="fr" cx="126" cy="42" r="15"/><path d="M10 130l38-64 22 34 16-24 34 54Z"/><path d="M40 80l8 12 8-8"/><path class="s" d="M10 150c14-9 28-9 42 0s28 9 42 0 28-9 42 0 14 5 24 2"/><path class="r" d="M96 130c-6-8 6-14 0-22"/></svg>
+      <div class="eyebrow"><svg viewBox="0 0 44 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M1 7c5-6 9-6 14 0s9 6 14 0 9-6 14 0"/></svg>Territorio</div>
+      <h2>El Perú, departamento por departamento</h2>
+      <p class="lede">Elige una capa con los íconos del mapa, mueve la hora y toca un departamento. Los colores cambian con cada capa y la barra te dice qué significan.</p>
+    </div>
+    <div class="terr">
+      <div class="mapa-caja reveal">
+        <div class="mapa-top"><b>Perú · clima de hoy</b><span class="tag demo" id="terrEstado">Conectando…</span></div>
+        <div style="position:relative">
+          <div id="mapaPeru"></div>
+          <button class="mapa-reset" id="mapaReset" type="button" title="Ver todo el Perú" aria-label="Ver todo el Perú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+          <div class="mapa-ctrl">
+            <div class="capas" id="capas" role="group" aria-label="Capas del mapa"></div>
+            <div class="leyenda"><span class="t" id="leyTitulo"></span><span class="ramp" id="leyRampa"></span><div class="ends"><span id="leyMin"></span><span id="leyMax"></span></div><span class="q" id="leyTexto"></span></div>
+            <div class="hora">
+              <div class="franjas" id="franjas"><span>Madr.</span><span>Mañ.</span><span>Tar.</span><span>Noc.</span></div>
+              <input type="range" id="horaRango" min="0" max="23" step="1" aria-label="Hora del día">
+              <output id="horaTxt" for="horaRango"></output>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel zone-card reveal" id="zoneCard"></div>
+    </div>
+  </div>
+</section>
+<div class="ola-div" aria-hidden="true"><svg viewBox="0 0 2400 46" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 23q75-30 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/><path class="roja" d="M0 30q75 24 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/></svg></div>
+
+<!-- ============ OCÉANO ============ -->
+<section id="oceano">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <svg class="deco" viewBox="0 0 170 170" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="s" d="M8 60c13-11 26-11 39 0s26 11 39 0 26-11 39 0 26 11 37 2"/><path class="r" d="M8 88c13-11 26-11 39 0s26 11 39 0 26-11 39 0 26 11 37 2"/><path class="s" d="M8 116c13-11 26-11 39 0s26 11 39 0 26-11 39 0 26 11 37 2"/><path d="M52 140c14-14 44-16 62-4l16-12v32l-16-12c-18 12-48 10-62-4Z"/><circle cx="74" cy="138" r="2.5"/><circle class="fr" cx="132" cy="30" r="13"/></svg>
+      <div class="eyebrow"><svg viewBox="0 0 44 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M1 7c5-6 9-6 14 0s9 6 14 0 9-6 14 0"/></svg>Observatorio oceánico</div>
+      <h2>¿Cómo está el mar frente a la costa?</h2>
+      <p class="lede">El Niño empieza en el océano. Estas son imágenes satelitales de la NASA: cambia de capa, retrocede en el tiempo y haz clic en el mar para leer su valor.</p>
+    </div>
+    <div class="oce-bar reveal">
+      <div class="chips" id="oVar" role="group" aria-label="Capas del océano"></div>
+      <div class="oce-fecha"><button type="button" id="oAntes" aria-label="Fecha anterior">‹</button><input type="range" id="oFecha" min="0" max="29" step="1" aria-label="Fecha"><button type="button" id="oDespues" aria-label="Fecha siguiente">›</button><output id="oFechaTxt" for="oFecha"></output></div>
+    </div>
+    <div class="oce-mapa reveal">
+      <div id="mapaMar"></div>
+      <div class="oce-ley"><span class="t" id="oLeyTitulo"></span><span class="ramp" id="oLeyRampa"></span><div class="ends"><span id="oLeyMin"></span><span id="oLeyMedio"></span><span id="oLeyMax"></span></div></div>
+      <div class="oce-aviso" id="oAviso" hidden><div><svg width="56" height="68"><use href="#duke"/></svg><h3>El mapa en vivo necesita conexión con la NASA</h3><p>Desde aquí no se pudo conectar con NASA GIBS. Abre la página desde tu computadora (IntelliJ) o desde el link público y verás las imágenes satelitales del día.</p></div></div>
+    </div>
+    <p class="oce-fuente" id="oFuente"></p>
+
+    <div class="oce-comp">
+      <div class="panel reveal">
+        <h3 style="margin-bottom:16px">Compara dos lugares de la costa</h3>
+        <div class="compare">
+          <div class="lado"><select id="selA" aria-label="Primer lugar"></select><b id="valA">…</b><small>valor leído de la imagen NASA</small></div>
+          <span class="vs">vs</span>
+          <div class="lado"><select id="selB" aria-label="Segundo lugar"></select><b id="valB">…</b><small>valor leído de la imagen NASA</small></div>
+        </div>
+        <p class="compare-dif" id="oDif">&nbsp;</p>
+      </div>
+      <div class="panel reveal">
+        <h3 style="margin-bottom:10px">¿Qué estás viendo?</h3>
+        <p class="ocean-text" id="oTexto"></p>
+        <p class="notice">Los recuadros punteados son las regiones donde se mide El Niño: 3.4 y 3 en el Pacífico central, 1+2 frente al Perú y Ecuador.</p>
+      </div>
+    </div>
+
+    <div class="panel indice reveal">
+      <div class="indice-top">
+        <div class="indice-valor"><small>Índice costero NiñoLab · Niño 1+2</small><b id="indValor">—</b><span id="indCat"></span><small id="indFecha" style="text-transform:none;letter-spacing:0"></small></div>
+        <div class="escala"><span class="marca" id="escMarca" style="left:50%"></span><div class="barra" id="escBarra"></div><div class="cortes" id="escCortes"></div></div>
+      </div>
+      <p class="notice">Calculado por NiñoLab con NASA POWER: temperatura de la superficie del mar en la región Niño 1+2, comparada con 1991–2020 y promediada en 3 meses. No es el ICEN oficial del ENFEN; usa su escala de categorías (Nota Técnica ENFEN 01-2024) como referencia.</p>
+
+      <h3>Serie histórica</h3>
+      <p class="sub">Cada barra es un mes y su color es la condición del mar en ese mes.</p>
+      <div class="chart-box" id="indHistoria"></div>
+      <div class="chips" id="indRango"><button type="button" data-r="5">5 años</button><button type="button" data-r="10">10 años</button><button type="button" data-r="20">20 años</button><button type="button" data-r="0">Serie completa</button></div>
+
+      <h3>Comparación entre episodios</h3>
+      <p class="sub">Dos bloques de 24 meses, uno sobre otro, para ver si un episodio se parece a otro.</p>
+      <div class="cmp-ctrl"><label for="selBloqueA">Bloque A</label><select id="selBloqueA"></select><span>vs</span><label for="selBloqueB">Bloque B</label><select id="selBloqueB"></select></div>
+      <div class="cmp-ley" id="cmpLeyenda"></div>
+      <div class="chart-box" id="indComparar"></div>
+    </div>
+  </div>
+</section>
+<div class="ola-div" aria-hidden="true"><svg viewBox="0 0 2400 46" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 23q75-30 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/><path class="roja" d="M0 30q75 24 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/></svg></div>
+
+<!-- ============ EL NIÑO EN PERÚ ============ -->
+<section id="cronologia">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <svg class="deco" viewBox="0 0 170 170" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="fs" cx="85" cy="85" r="68"/><path d="M85 85c0-10 14-12 16-2s-8 22-22 20-24-18-18-36 28-28 48-18 26 36 12 54"/><path class="r" d="M85 85c0 10-14 12-16 2s8-22 22-20 24 18 18 36-28 28-48 18-26-36-12-54"/><circle class="fr" cx="85" cy="85" r="6"/></svg>
+      <div class="eyebrow"><svg viewBox="0 0 44 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M1 7c5-6 9-6 14 0s9 6 14 0 9-6 14 0"/></svg>El Niño en Perú</div>
+      <h2>Cinco siglos de mar caliente</h2>
+      <p class="lede">Los episodios que marcaron al país: qué pasó en el océano y qué pasó en tierra. Toca un año.</p>
+    </div>
+    <div class="tl-track reveal" id="tlTrack" role="tablist" aria-label="Línea de tiempo"></div>
+    <div class="tl-detail" id="tlDetail"></div>
+    <div class="news" id="news"></div>
+    <div class="ticker" aria-label="Avisos oficiales (próximamente)">
+      <span class="lbl">Próximamente en vivo</span>
+      <div class="run"><div id="tickerRun"></div></div>
+    </div>
+  </div>
+</section>
+<div class="ola-div" aria-hidden="true"><svg viewBox="0 0 2400 46" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 23q75-30 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/><path class="roja" d="M0 30q75 24 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/></svg></div>
+
+<!-- ============ MIS HALLAZGOS ============ -->
+<section id="hallazgos">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <svg class="deco" viewBox="0 0 170 170" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect class="fs" x="34" y="18" width="104" height="134" rx="10"/><rect x="34" y="18" width="104" height="134" rx="10"/><path d="M52 18v134"/><path class="r" d="M66 112l16-22 14 12 22-34"/><path d="M66 52h54M66 66h36"/><circle class="fr" cx="118" cy="68" r="5"/></svg>
+      <div class="eyebrow"><svg viewBox="0 0 44 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M1 7c5-6 9-6 14 0s9 6 14 0 9-6 14 0"/></svg>Mis hallazgos</div>
+      <h2>Tu cuaderno de detective</h2>
+      <p class="lede">Cada investigación que guardes queda aquí con su pregunta, su conclusión y su nivel de evidencia.</p>
+    </div>
+    <div id="findsBox"></div>
+  </div>
+</section>
+<div class="ola-div" aria-hidden="true"><svg viewBox="0 0 2400 46" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2"><path d="M0 23q75-30 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/><path class="roja" d="M0 30q75 24 150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0t150 0"/></svg></div>
+
+<!-- ============ EXPEDIENTE CIENTÍFICO ============ -->
+<section id="metodo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <svg class="deco" viewBox="0 0 170 170" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(-28 85 70)"><rect x="68" y="56" width="34" height="28" rx="5"/><rect class="s" x="22" y="60" width="40" height="20"/><rect class="s" x="108" y="60" width="40" height="20"/><path d="M62 70h6M102 70h6M36 60v20M48 60v20M122 60v20M134 60v20"/></g><path class="r" d="M70 108c4 6 4 12 0 18M58 104c8 10 8 22 0 32M46 100c12 14 12 32 0 46" transform="rotate(-70 70 118) translate(8 4)"/><path class="s" d="M12 152c14-9 28-9 42 0s28 9 42 0 28-9 42 0 14 5 22 2"/></svg>
+      <div class="eyebrow"><svg viewBox="0 0 44 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M1 7c5-6 9-6 14 0s9 6 14 0 9-6 14 0"/></svg>Expediente científico</div>
+      <h2>¿Cómo comprueba NiñoLab un resultado?</h2>
+      <p class="lede">Primero entiendes, luego exploras y, si quieres, verificas. La ciencia completa siempre está disponible, pero nunca te la ponemos delante sin explicarla.</p>
+    </div>
+    <div class="method reveal">
+      <div class="level"><span class="n">1</span><h3>Comprender</h3><p>La conclusión en una frase, dos cifras clave y lo que significa para ti.</p><ul><li>Explicación sencilla</li><li>Evolución histórica</li><li>Implicaciones y límites</li></ul></div>
+      <div class="level"><span class="n">2</span><h3>Explorar</h3><p>Gráficos interactivos, años excepcionales y comparación entre etapas.</p><ul><li>Serie y anomalías</li><li>Tres etapas del período</li><li>Mapas por capa</li></ul></div>
+      <div class="level"><span class="n">3</span><h3>Verificar</h3><p>Datos, fuentes, pruebas estadísticas e incertidumbre, listos para revisar.</p><ul><li>Mann-Kendall y pendiente de Sen</li><li>Robustez y autocorrelación</li><li>Expediente en JSON</li></ul></div>
+    </div>
+    <div class="states reveal">
+      <div class="state ok"><span class="status ok">Cambio respaldado</span><p>La tendencia es significativa y se mantiene al quitar los años más extremos.</p></div>
+      <div class="state insuf"><span class="status insuf">Evidencia insuficiente</span><p>No alcanza para afirmar una tendencia. No significa que no haya ningún cambio.</p></div>
+      <div class="state inc"><span class="status inc">Resultado inconcluso</span><p>Hay poca cobertura o el resultado depende de unos pocos episodios.</p></div>
+    </div>
+    <div class="sources-wrap reveal">
+      <table class="sources">
+        <thead><tr><th>Producto</th><th>Institución</th><th>Qué aporta</th><th>Cobertura</th><th>Dónde se usa</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>POWER</td><td>NASA LaRC</td><td>Lluvia, temperatura del aire, humedad del suelo y temperatura de superficie (MERRA-2)</td><td>1981 – presente · ≈ 50 km</td><td>Investigar · índice costero</td><td><span class="tag real">Conectado</span></td></tr>
+          <tr><td>MUR SST</td><td>NASA JPL · GIBS</td><td>Temperatura del mar y su anomalía</td><td>2002 – presente · diaria</td><td>Océano</td><td><span class="tag real">Conectado</span></td></tr>
+          <tr><td>SMAP</td><td>NASA JPL · GIBS</td><td>Salinidad superficial del mar</td><td>2015 – presente</td><td>Océano</td><td><span class="tag real">Conectado</span></td></tr>
+          <tr><td>MEaSUREs · OSCAR</td><td>NASA JPL · GIBS</td><td>Altura del mar y corrientes</td><td>Última fecha publicada en GIBS</td><td>Océano</td><td><span class="tag real">Conectado</span></td></tr>
+          <tr><td>Open-Meteo</td><td>Fuente complementaria</td><td>Clima de hoy, hora por hora</td><td>Día actual</td><td>Territorio</td><td><span class="tag real">Conectado</span></td></tr>
+          <tr><td>GPM IMERG · MODIS</td><td>NASA GSFC</td><td>Lluvia y vegetación en detalle</td><td>1998 / 2000 – presente</td><td>Capas del mapa</td><td><span class="tag demo">Previsto</span></td></tr>
+          <tr><td>ICEN · ONI</td><td>ENFEN · NOAA</td><td>Índices oficiales de El Niño</td><td>Según índice</td><td>Contexto</td><td><span class="tag demo">Previsto</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rules reveal">
+      <div>No inventa datos, mapas ni porcentajes</div>
+      <div>No confunde anomalía con tendencia</div>
+      <div>No afirma causalidad sin evidencia</div>
+      <div>No presenta un punto como promedio regional</div>
+      <div>No promete cobertura que no existe</div>
+      <div>No cambia resultados según tu perfil</div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-big">Niño<b>Lab</b> investiga como un científico y explica como un educador.</div>
+    <p>Proyecto para NASA Space Apps Challenge 2026 · Equipo de Ingeniería de Sistemas e Ingeniería Industrial. Datos: NASA POWER y NASA GIBS; clima del día: Open-Meteo. Cuando no hay conexión, la página lo indica y usa ejemplos marcados.</p>
+  </div>
+</footer>
+
+<!-- ============ DUKE ============ -->
+<button class="duke-fab" id="dukeFab" type="button" aria-label="Abrir a Duke, el asistente"><svg><use href="#duke"/></svg><span class="ping" id="dukePing"></span></button>
+<div class="duke-panel" id="dukePanel" hidden role="dialog" aria-label="Duke, asistente de NiñoLab">
+  <div class="duke-top"><svg><use href="#duke"/></svg><div><b>Duke</b><small>Tu guía en NiñoLab</small></div><button type="button" id="dukeClose" aria-label="Cerrar">×</button></div>
+  <div class="duke-msgs" id="dukeMsgs"></div>
+  <div class="duke-q" id="dukeQ"></div>
+  <p class="duke-foot">Duke responde con explicaciones fijas y con los resultados que calculó el motor. No inventa cifras.</p>
+</div>
+
+<!-- Código: datos → motor → secciones → arranque -->
+<script src="js/vendor/leaflet.js"></script>
+<script src="js/datos/departamentos.js"></script>
+<script src="js/datos/eventos.js"></script>
+<script src="js/datos/peru-geo.js"></script>
+<script src="js/datos/tierra.js"></script>
+<script src="js/datos/tierra-pacifico.js"></script>
+<script src="js/datos/escalas-nasa.js"></script>
+<script src="js/datos/indice-costero.js"></script>
+<script src="js/util.js"></script>
+<script src="js/motor/estadistica.js"></script>
+<script src="js/motor/nasa-power.js"></script>
+<script src="js/motor/series-demo.js"></script>
+<script src="js/motor/interpretacion.js"></script>
+<script src="js/graficos.js"></script>
+<script src="js/secciones/inicio.js"></script>
+<script src="js/secciones/perfil.js"></script>
+<script src="js/secciones/investigar.js"></script>
+<script src="js/secciones/territorio.js"></script>
+<script src="js/secciones/oceano.js"></script>
+<script src="js/secciones/indice.js"></script>
+<script src="js/secciones/cronologia.js"></script>
+<script src="js/secciones/hallazgos.js"></script>
+<script src="js/duke.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

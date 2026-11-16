@@ -1,0 +1,72 @@
+/* ==========================================================
+   NiñoLab · oceano.css
+   Mapa del Pacífico con capas NASA e índice costero.
+   ========================================================== */
+#oceano{background:linear-gradient(180deg,#fff 0,var(--sea-soft) 140px,var(--sea-soft) calc(100% - 140px),#fff 100%)}
+.oce-bar{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.oce-fecha{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 8px 6px 14px}
+.oce-fecha input{accent-color:var(--red);width:150px}
+.oce-fecha button{border:1px solid var(--line);background:#fff;width:34px;height:34px;border-radius:50%;font-weight:800}
+.oce-fecha output{font-weight:800;font-size:.95rem;min-width:11ch;text-align:center}
+.oce-mapa{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:#fff}
+#mapaMar{height:520px;width:100%;border-radius:0;background:#EAF0F5}
+@media (max-width:700px){#mapaMar{height:420px}}
+.oce-ley{position:absolute;left:14px;bottom:14px;z-index:800;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);width:min(300px,calc(100% - 28px));display:grid;gap:6px}
+.oce-ley .t{font-weight:800;font-size:.9rem}
+.oce-ley .ramp{height:11px;border-radius:6px}
+.oce-ley .ends{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.76rem;color:var(--muted)}
+.oce-aviso{position:absolute;inset:0;z-index:900;display:grid;place-items:center;background:rgba(255,255,255,.86);text-align:center;padding:24px}
+.oce-aviso div{max-width:44ch;display:grid;gap:8px;justify-items:center}
+.nino-lbl{background:transparent;border:0}
+.nino-lbl span{font-family:var(--f-mono);font-size:.68rem;font-weight:700;letter-spacing:.1em;background:var(--ink);color:#fff;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.puerto-lbl{background:transparent;border:0}
+.puerto-lbl div{transform:translate(8px,-50%);white-space:nowrap;font-size:.8rem;font-weight:800;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
+.oce-fuente{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);margin-top:10px}
+
+.oce-comp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;margin-top:24px;align-items:start}
+@media (max-width:900px){.oce-comp{grid-template-columns:1fr}}
+.compare{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:start}
+.compare .lado{display:grid;gap:6px;min-width:0}
+.compare .lado b{font-family:var(--f-display);font-size:2rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.compare .lado small{color:var(--muted);font-size:.86rem}
+.compare .vs{font-family:var(--f-mono);color:var(--muted);padding-top:48px}
+.compare-dif{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-weight:700}
+.compare-dif b{color:var(--red)}
+.ocean-text strong{color:var(--red-ink)}
+
+/* Índice costero */
+.indice{margin-top:28px}
+.indice-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
+@media (max-width:800px){.indice-top{grid-template-columns:1fr}}
+.indice-valor{display:grid;gap:4px}
+.indice-valor small{font-family:var(--f-mono);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.indice-valor b{font-family:var(--f-mono);font-size:3.2rem;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.indice-valor span{display:inline-block;justify-self:start;border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff}
+.escala{position:relative;padding-top:26px}
+.escala .barra{display:grid;grid-template-columns:repeat(8,1fr);border-radius:10px;overflow:hidden}
+.escala .barra span{padding:9px 4px;text-align:center;font-size:.74rem;font-weight:800;color:#fff;line-height:1.15}
+.escala .barra span.claro{color:var(--ink)}
+.escala .cortes{display:grid;grid-template-columns:repeat(8,1fr);font-family:var(--f-mono);font-size:.74rem;color:var(--muted);margin-top:4px}
+.escala .cortes span{text-align:right;transform:translateX(50%)}
+.escala .cortes span:last-child{visibility:hidden}
+.escala .marca{position:absolute;top:0;transform:translateX(-50%);font-size:.8rem;font-weight:800;white-space:nowrap;transition:left .8s cubic-bezier(.2,.7,.2,1)}
+.escala .marca::after{content:"";display:block;width:0;height:0;margin:2px auto 0;border:6px solid transparent;border-top-color:var(--ink)}
+@media (max-width:640px){.escala .barra span{font-size:.6rem;padding:8px 1px}}
+.indice h3{margin:30px 0 4px}
+.indice .sub{color:var(--muted);font-size:.96rem;margin-bottom:10px;max-width:70ch}
+.indice .chips{margin-top:10px}
+.indice .chips button{padding:7px 14px;font-size:.86rem}
+.cmp-ctrl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:10px 0;font-weight:700}
+.cmp-ctrl select{width:auto;padding:8px 11px}
+.cmp-ley{display:flex;gap:18px;justify-content:center;font-size:.9rem;font-weight:700;margin-bottom:4px}
+.cmp-ley i{display:inline-block;width:22px;height:3px;vertical-align:middle;margin-right:6px}
+
+/* Celular */
+@media (max-width:520px){
+  .oce-fecha{width:100%;flex-wrap:wrap;justify-content:center;border-radius:18px;padding:8px}
+  .oce-fecha input{flex:1;min-width:0;width:auto}
+  .oce-fecha output{flex-basis:100%}
+  .escala{overflow:hidden}
+  .compare{grid-template-columns:1fr}
+  .compare .vs{padding-top:0;text-align:center}
+}
